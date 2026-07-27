@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    # Desta vez a fonte é um repositório HELM, não uma pasta de YAMLs.
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack       # o chart que traz Prometheus + Grafana + Alertmanager
+    targetRevision: 65.1.1             # versão fixada = reproduzível
+
+    helm:
+      # "values" inline: sobrescreve as configurações padrão do chart.
+      values: |
+        grafana:
+          # Expõe o Grafana via NodePort na 30090 (que mapeamos no kind).
+          service:
+            type: NodePort
+            nodePort: 30090
+          # Senha do admin do Grafana (só pra lab local!).
+          adminPassword: admin
+        prometheus:
+          prometheusSpec:
+            # Faz o Prometheus descobrir automaticamente apps pra monitorar
+            # em qualquer namespace, não só onde ele está instalado.
+            serviceMonitorSelectorNilUsesHelmValues: false
+            podMonitorSelectorNilUsesHelmValues: false
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring              # a stack vai viver num namespace próprio
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true           # necessário: os CRDs do Prometheus são grandes
