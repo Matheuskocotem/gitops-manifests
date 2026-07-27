@@ -1,0 +1,21 @@
+# O ServiceMonitor é um recurso do Prometheus Operator (veio com o kube-prometheus-stack).
+# Ele diz ao Prometheus: "descubra os pods desse Service e raspe métricas deles".
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: demo-api
+  namespace: demo-api
+  labels:
+    app: demo-api
+    release: monitoring   # importante: o Prometheus filtra ServiceMonitors por esse label
+spec:
+  selector:
+    matchLabels:
+      app: demo-api       # casa com o label do Service demo-api
+  namespaceSelector:
+    matchNames:
+      - demo-api
+  endpoints:
+    - port: http          # o nome da porta do Service (definimos como "http")
+      path: /actuator/prometheus   # onde a app expõe as métricas
+      interval: 15s       # de quanto em quanto tempo o Prometheus coleta
