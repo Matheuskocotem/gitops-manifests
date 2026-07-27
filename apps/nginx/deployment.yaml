@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx
-  namespace: nginx-demo        # vive no namespace que criamos
+  namespace: nginx-demo        # viveespace que criamos
 spec:
   replicas: 1                  # quantas cópias do pod (vamos mudar isso no teste!)
   selector:

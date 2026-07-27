@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application                    # tipo próprio do ArgoCD
+metadata:
+  name: nginx
+  namespace: argocd                  # a Application vive no namespace do ArgoCD
+spec:
+  project: default                   # projeto padrão do ArgoCD
+
+  source:                            # DE ONDE puxar
+    repoURL: https://github.com/Matheuskocotem/gitops-manifests.git
+    targetRevision: main             # qual branch
+    path: apps/nginx                 # qual pasta dentro do repo
+
+  destination:                       # PRA ONDE aplicar
+    server: https://kubernetes.default.svc   # o próprio cluster onde o ArgoCD roda
+    namespace: nginx-demo            # namespace de destino
+
+  syncPolicy:                        # COMO se comportar
+    automated:
+      prune: true                    # apaga do cluster o que sumir do Git
+      selfHeal: true                 # desfaz mudanças feitas na mão (reconciliação!)
+    syncOptions:
+      - CreateNamespace=true
