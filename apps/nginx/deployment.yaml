@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: nginx-demo        # vive no namespace que criamos
+spec:
+  replicas: 1                  # quantas cópias do pod (vamos mudar isso no teste!)
+  selector:
+    matchLabels:
+      app: nginx               # o Deployment gerencia pods com esse label
+  template:                    # o "molde" de cada pod
+    metadata:
+      labels:
+        app: nginx             # todo pod nasce com esse label (bate com o selector)
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27    # imagem oficial, versão fixada (reproduzível)
+          ports:
+            - containerPort: 80
+          resources:           # limites — boa prática, evita pod comer o cluster
+            requests:
+              memory: "32Mi"
+              cpu: "50m"
+            limits:
+              memory: "64Mi"
+              cpu: "100m"
