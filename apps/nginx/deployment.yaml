@@ -4,7 +4,7 @@ metadata:
   name: nginx
   namespace: nginx-demo        # viveespace que criamos
 spec:
-  replicas: 1                  # quantas cópias do pod (vamos mudar isso no teste!)
+  replicas: 3                  # quantas cópias do pod (vamos mudar isso no teste!)
   selector:
     matchLabels:
       app: nginx               # o Deployment gerencia pods com esse label
